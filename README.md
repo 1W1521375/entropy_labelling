@@ -15,7 +15,7 @@
 エントロピーH(P)は，annの平均的な確信度の「低さ」を表す指標  
 -H(P)は，annの平均的な確信度の「高さ」を表す指標
 
-<img src="https://latex.codecogs.com/gif.latex?\frac{1}{K}&space;\leq&space;P(Y=k|X=\boldsymbol{\mathbf{x}})" />  
+<img src="https://latex.codecogs.com/gif.latex?-log_{2}{(p_k)}&space;\leq&space;H(P)" />  
 pkの自己情報量と，平均との比較  
 
 H(P)を，「各kがlabelとして採用されるか」のthrshldに使っている  
