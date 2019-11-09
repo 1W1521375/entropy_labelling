@@ -29,4 +29,3 @@ H(P)を，「各kがlabelとして採用されるか」のthrshldに使ってい
 
 分布Pという全体の様相を考慮した動的thrshld  
 
-some random test for learning how git merge works
