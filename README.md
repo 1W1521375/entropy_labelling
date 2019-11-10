@@ -27,5 +27,5 @@ H(P)を，「各kがlabelとして採用されるか」のthrshldに使ってい
 <img src="https://latex.codecogs.com/gif.latex?p_k&space;\geq&space;{2}^{-H(P)}" />  
 すなわち，右辺を超えられる確信度pkをもつ全てのkを，ラベルとして採用する  
 
-分布Pという全体の様相を考慮した動的thrshld  
+分布Pという全体の様相を考慮した，データサンプルごとの動的thrshld  
 
