@@ -29,3 +29,5 @@ H(P)を，「各kがlabelとして採用されるか」のthrshldに使ってい
 
 分布Pという全体の様相を考慮した，データサンプルごとの動的thrshld  
 
+## 研究に関する記録
+https://community.inkdrop.app/note/3f435e8dd88123d8f9718d60941246f4/note:rk3Axoxv9
