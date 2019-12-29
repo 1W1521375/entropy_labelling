@@ -87,7 +87,7 @@ for k in range(1,4):
                 a += sample_lnum
                 b += sample_lqual
                 c += sample_lqual2
-                mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
+            mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
 
     if (k == 1):
         lqual_mnist1 = [e[1] for e in mnist_evals]
