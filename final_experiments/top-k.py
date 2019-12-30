@@ -96,7 +96,7 @@ for k in range(1, 5):
         lqual_mnist1 = [e[1] for e in mnist_evals]
     elif (k == 2):
         lqual_mnist2 = [e[1] for e in mnist_evals]
-    elif: (k == 3):
+    elif (k == 3):
         lqual_mnist3 = [e[1] for e in mnist_evals]
     else:
         lqual_mnist4 = [e[1] for e in mnist_evals]
