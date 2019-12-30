@@ -19,7 +19,7 @@ def factorial(n):
         return n*factorial(n - 1)
     else:
         print("sth wrong")
-
+        
 # top-k labelling
 def topk_label(probas, s_cls, k):
     l_indexes = probas.argsort()[::-1][:k]
@@ -73,7 +73,8 @@ lqual_mnist1 = []
 lqual_mnist2 = []
 lqual_mnist3 = []
 
-for k in range(1,4):
+# from top-1 (ord) to top-4
+for k in range(1, 5):
     mnist_evals = []
     for i in range(2, 11):
         a, b, c = 0, 0, 0
@@ -88,19 +89,24 @@ for k in range(1,4):
                 b += sample_lqual
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-
+    
+    print(mnist_evals, sep = "\n", file = codecs.open("top-k_results.txt", "a", "utf-8"))
+            
     if (k == 1):
         lqual_mnist1 = [e[1] for e in mnist_evals]
     elif (k == 2):
         lqual_mnist2 = [e[1] for e in mnist_evals]
-    else:
+    elif: (k == 3):
         lqual_mnist3 = [e[1] for e in mnist_evals]
-
+    else:
+        lqual_mnist4 = [e[1] for e in mnist_evals]
+        
 plt.figure(dpi = 100)
-plt.title("Quality of labels; Top-k (k = 1, 2, 3)")
+plt.title("Quality of labels; Top-k (k = 1, 2, 3, 4)")
 plt.plot([i for i in range(2, 11)], lqual_mnist1, marker = "o", color = "k", label = "Top-1 MNIST")
 plt.plot([i for i in range(2, 11)], lqual_mnist2, marker = "o", color = "b", label = "Top-2 MNIST")
 plt.plot([i for i in range(2, 11)], lqual_mnist3, marker = "o", color = "r", label = "Top-3 MNIST")
+plt.plot([i for i in range(2, 11)], lqual_mnist4, marker = "o", color = "r", label = "Top-3 MNIST")
 plt.xlabel("Num of sub-classes")
 plt.ylabel("Average label accuracy of labels generated")	
 plt.legend(loc = "best")
