@@ -69,14 +69,14 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-lqual_mnist1 = []
-lqual_mnist2 = []
-lqual_mnist3 = []
+lqual_mnist = []
 
-# from top-1 (ord) to top-4
-for k in range(1, 5):
+# from top-1 (ord) to top-9
+for k in range(1, 10):
     mnist_evals = []
-    for i in range(2, 11):
+    i = k + 1
+    while (i < 11): # i: num of sub-classes
+        print(f"{i} classes, {k}-labels")
         a, b, c = 0, 0, 0
         if (i == 10):
             sample_lnum, sample_lqual, sample_lqual2 = topk_scls_eval(k, classes, orig_A1, lim_A1)
@@ -89,26 +89,25 @@ for k in range(1, 5):
                 b += sample_lqual
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-    
-    print(mnist_evals, sep = "\n", file = codecs.open("top-k_results.txt", "a", "utf-8"))
+        i += 1
+    print(mnist_evals, sep = "\n", file = codecs.open("/home/killerqueen/lab/final_experiments/top-k_results2.txt", "a", "utf-8"))
             
-    if (k == 1):
-        lqual_mnist1 = [e[1] for e in mnist_evals]
-    elif (k == 2):
-        lqual_mnist2 = [e[1] for e in mnist_evals]
-    elif (k == 3):
-        lqual_mnist3 = [e[1] for e in mnist_evals]
-    else:
-        lqual_mnist4 = [e[1] for e in mnist_evals]
-        
+    quals = [e[1] for e in mnist_evals]
+    lqual_mnist.append(quals)
+
 plt.figure(dpi = 100)
-plt.title("Quality of labels; Top-k (k = 1, 2, 3, 4)")
-plt.plot([i for i in range(2, 11)], lqual_mnist1, marker = "o", color = "k", label = "Top-1 MNIST")
-plt.plot([i for i in range(2, 11)], lqual_mnist2, marker = "o", color = "b", label = "Top-2 MNIST")
-plt.plot([i for i in range(2, 11)], lqual_mnist3, marker = "o", color = "r", label = "Top-3 MNIST")
-plt.plot([i for i in range(2, 11)], lqual_mnist4, marker = "o", color = "r", label = "Top-3 MNIST")
+plt.title("Quality of labels; Top-k (k = 1, 2, 3, 4, 5, 6, 7, 8, 9)")
+plt.plot([i for i in range(2, 11)], lqual_mnist[0], marker = 'o', color = 'b', label = "Top-1")
+plt.plot([i for i in range(3, 11)], lqual_mnist[1], marker = 'o', color = 'g', label = "Top-2")
+plt.plot([i for i in range(4, 11)], lqual_mnist[2], marker = 'o', color = 'r', label = "Top-3")
+plt.plot([i for i in range(5, 11)], lqual_mnist[3], marker = 'o', color = 'c', label = "Top-4")
+plt.plot([i for i in range(6, 11)], lqual_mnist[4], marker = 'o', color = 'm', label = "Top-5")
+plt.plot([i for i in range(7, 11)], lqual_mnist[5], marker = 'o', color = 'y', label = "Top-6")
+plt.plot([i for i in range(8, 11)], lqual_mnist[6], marker = 'o', color = 'k', label = "Top-7")
+plt.plot([i for i in range(9, 11)], lqual_mnist[7], marker = 'o', color = 'b', label = "Top-8")
+plt.plot([i for i in range(10, 11)], lqual_mnist[8], marker = 'o', color = 'g', label = "Top-9")
 plt.xlabel("Num of sub-classes")
 plt.ylabel("Average label accuracy of labels generated")	
-plt.legend(loc = "best")
+plt.legend(loc = 'best')
 plt.grid(True)
-plt.savefig("topk_labels-acc.pdf")
+plt.savefig("/home/killerqueen/lab/final_experiments/topk_labels-acc.pdf")
