@@ -90,7 +90,7 @@ for k in range(1, 10):
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
         i += 1
-    print(mnist_evals, sep = "\n", file = codecs.open("/home/killerqueen/lab/final_experiments/top-k_results2.txt", "a", "utf-8"))
+    print(mnist_evals, sep = "\n", file = codecs.open("/home/killerqueen/lab/final_experiments/top-k_results.txt", "a", "utf-8"))
             
     quals = [e[1] for e in mnist_evals]
     lqual_mnist.append(quals)
