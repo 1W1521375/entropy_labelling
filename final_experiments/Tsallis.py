@@ -67,7 +67,6 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 train_imgs = np.array([x.ravel() for x in train_images])
 test_imgs = np.array([y.ravel() for y in test_images])
-
 img_SIZE = train_images.shape[1]*train_images.shape[2]
 
 # main experiment
@@ -79,10 +78,11 @@ fact_10 = factorial(10)
 lqual_mnist = []
 
 # from q \in [0.1, 2.0]... be careful with q = 0.99
-q = 0.1
-while (q <= 2.0):
+q_list = [q/10 for q in range(1, 21)]
+q_list[9] = 0.99
+for q in q_list:
     mnist_evals = []
-    while (i < 11): # i: num of sub-classes
+    for i in range(2, 11): # i: num of sub-classes
         a, b, c = 0, 0, 0
         if (i == 10):
             sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
@@ -95,30 +95,19 @@ while (q <= 2.0):
                 b += sample_lqual
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-        i += 1
-    print(mnist_evals, sep = '\n', file = codecs.open("/home/killerqueen/lab/final_experiments/tsallis_results.txt", 'a', 'utf-8'))
+    print(f"{q}\n{mnist_evals}"q, sep = '\n', file = codecs.open("/home/killerqueen/lab/final_experiments/tsallis_results_full.txt", 'a', 'utf-8'))
             
     quals = [e[1] for e in mnist_evals]
     lqual_mnist.append(quals)
     
-    if (q == 0.9):
-        q = 0.99
-    elif (q == 0.99):
-        q = 1.1
-    else:
-        q += 0.1
-
 # draw a graph
 plt.figure(dpi = 100)
 plt.title("Quality of labels; Tsallis (q = 0.1, ..., 2.0)")
 classes = [i for i in range(2, 11)]
 
-for c in range(20)
-    if (c == 9):
-        q_val = "q = 0.99"
-    else:
-        q_val = "q = " + str(c*0.1 + 0.1)
-    plt.plot(classes, lqual_mnist[i], marker = 'o', color = cm.bone(c/20), label = q_val)
+for c in range(20):
+    q_val = "q = " + str(q_list[c])
+    plt.plot(classes, lqual_mnist[c], marker = 'o', color = cm.bone(c/20), label = q_val)
 
 plt.xlabel("Num of sub-classes")
 plt.ylabel("Average label accuracy of labels generated")	
