@@ -25,9 +25,10 @@ def shannon_label(probas, s_cls):
     info_con = (-1)*np.log2(probas)
     # entropy
     Hp = np.sum(np.multiply(probas, info_con))
-    # クラス数変えると，probaでのindexがそのままlabelとして使えないのでs_cls内を参照させる
-    labels = np.array([s_cls[i] for i, Ipk in enumerate(info_con) if Ipk <= Hp])
-    
+    if isnan(Hp):
+        labels = [s_cls[np.argmax(probas)]]
+    else:
+        labels = np.array([s_cls[i] for i, Ipk in enumerate(info_con) if Ipk <= Hp])
     return labels
 
 # labelling and evaluating them
