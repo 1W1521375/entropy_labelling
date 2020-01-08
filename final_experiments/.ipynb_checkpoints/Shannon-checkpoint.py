@@ -1,6 +1,7 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from math import isnan
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression as LR
 from keras.datasets import mnist
