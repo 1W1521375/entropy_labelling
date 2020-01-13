@@ -27,9 +27,9 @@ def tsallis_label(q, probas, s_cls):
     # thrshld in tsallis entropy model
     ts_thrshld = np.sum(np.power(probas, q))
     if q < 1:
-        labels = np.array([s_cls[i] for i, e in enumerate(elements) if e <= ts_thrshld])
+        labels = [s_cls[i] for i, e in enumerate(elements) if e <= ts_thrshld]
     else:
-        labels = np.array([s_cls[i] for i, e in enumerate(elements) if e >= ts_thrshld])
+        labels = [s_cls[i] for i, e in enumerate(elements) if e >= ts_thrshld]
     
     return labels
 
@@ -40,8 +40,6 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
     # extract dataset of chosen classes
     trn_imgs = [img for i, img in enumerate(train_imgs) if train_labels[i] in s_cls]
     trn_labels = [label for label in train_labels if label in s_cls]
-    tst_imgs = [img for i, img in enumerate(test_imgs) if test_labels[i] in s_cls]
-    tst_labels = [label for label in test_labels if label in s_cls]
 
     # generate an annotator
     a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
