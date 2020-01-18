@@ -6,6 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression as LR
 from keras.datasets import mnist
 import itertools
+from random import *
 import codecs
 
 # import warnings filter
