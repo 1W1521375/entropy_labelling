@@ -125,7 +125,7 @@ for q in q_list:
                 b += sample_lqual
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/results/txt_format/tsallis_flip", 'a', 'utf-8'))
+    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/results/txt_format/tsallis_flip.txt", 'a', 'utf-8'))
             
 #     quals = [e[1] for e in mnist_evals]
 #     lqual_mnist.append(quals)
