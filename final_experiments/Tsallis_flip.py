@@ -50,41 +50,47 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
             if (1 <= n):
             	dests = intersection - {origin}
             	flip_dict[str(origin)] = list(dests)
-
+    
     # extract dataset of the chosen classes
     trn_imgs = [img for i, img in enumerate(train_imgs) if train_labels[i] in s_cls]
     trn_labels = [label for label in train_labels if label in s_cls] 
-    # use #(orig_A) images for generating an annotator
-    orig_labels = trn_labels[:orig_A]
-    imgs, labels = [], []
-	# flip labels
-    for c in s_cls:
-        tr_imgs, tr_labels = [], []
-        for i, l in enumerate(orig_labels):
-            if (l == c):
-                tr_imgs.append(trn_imgs[i])
-                tr_labels.append(l)
-        # half is kept as original, the other half is uniformly flipped
-        dests = flip_dict.get(str(c))
-        if (dests == None):
-            continue
-        n = len(dests)
-        half = len(tr_labels)//2
-        chunk = half//n
-        flipped_list = tr_labels[:half]
-        # flipping
-        for i in range(n):
-            flipped_list = flipped_list + [dests[i] for k in range(chunk)]
-        # 要素数がflip候補数で割り切れない場合は詰め物する(最後の要素繰り返すだけ)
-        d = len(tr_labels) - len(flipped_list)
-        while (d > 0):
-            flipped_list.append(dests[-1])
-            d -= 1
-        # shuffling makes it equivalent to random sampling for flippling
-#         imgs = imgs + tr_imgs
-#         labels = labels + shuffle(flipped_labels)
-        imgs.append(tr_imgs)
-        labels.append(shuffle(flipped_labels))
+    if (len(flip_dict) != 0):
+        # use #(orig_A) images for generating an annotator
+        orig_labels = trn_labels[:orig_A]
+        imgs, labels = [], []
+        # flip labels
+        for c in s_cls:
+            tr_imgs, tr_labels = [], []
+            for i, l in enumerate(orig_labels):
+                if (l == c):
+                    tr_imgs.append(trn_imgs[i])
+                    tr_labels.append(l)
+            # half is kept as original, the other half is uniformly flipped
+            dests = flip_dict.get(str(c))
+            if (dests == None):
+                imgs = imgs + tr_imgs
+                labels = labels + tr_labels
+                continue
+
+            n = len(dests)
+            half = len(tr_labels)//2
+            chunk = half//n
+            flipped_list = tr_labels[:half]
+            # flipping
+            for i in range(n):
+                flipped_list = flipped_list + [dests[i] for k in range(chunk)]
+            # 要素数がflip候補数で割り切れない場合は詰め物する(最後の要素繰り返すだけ)
+            d = len(tr_labels) - len(flipped_list)
+            while (d > 0):
+                flipped_list.append(dests[-1])
+                d -= 1
+            # shuffling makes it equivalent to random sampling for flippling
+            imgs = imgs + tr_imgs
+            shuffle(flipped_list) # 破壊的操作，shuffleされたlistそのものが返ってくるのではない!
+            labels = labels + flipped_list
+    else:
+        imgs = trn_imgs[:orig_A]
+        labels = trn_labels[:orig_A]
 
     # generate an annotator
     a1_model = LR().fit(imgs, labels)
@@ -136,6 +142,7 @@ for q in q_list:
         else:
             combi_ni = fact_10//(factorial(i)*factorial(10 - i))
             for scls in itertools.combinations(classes, i):
+                a_pre, b_pre, c_pre = 0, 0, 0
                 for _ in range(5):
                     sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, list(scls), orig_A1, lim_A1)
                     a_pre += sample_lnum
@@ -146,7 +153,7 @@ for q in q_list:
                 c += c_pre/5
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/results/txt_format/tsallis_flip.txt", 'a', 'utf-8'))
-            
+
 #     quals = [e[1] for e in mnist_evals]
 #     lqual_mnist.append(quals)
     
