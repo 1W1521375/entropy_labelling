@@ -39,15 +39,15 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
     # confusing pairs ... see LR-misclassification-habits.pdf
     conf_pairs = conf_pairs = [(0, 6), (3, 5), (4, 9), (7, 9), (8, 2, 5, 9)]
     # decide what to flip
-	flip_dict = dict()
+    flip_dict = dict()
     for c_pair in conf_pairs:
     	origin = c_pair[0]
     	# if origin label is in sub_classes
     	if (origin in s_cls):
             intersection = set(c_pair)&set(s_cls)
-        	n = len(intersection) - 1
-        	# if there is at least one labels pair to flip
-        	if (1 <= n):
+            n = len(intersection) - 1
+            # if there is at least one labels pair to flip
+            if (1 <= n):
             	dests = intersection - {origin}
             	flip_dict[str(origin)] = list(dests)
 
@@ -55,7 +55,7 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
     trn_imgs = [img for i, img in enumerate(train_imgs) if train_labels[i] in s_cls]
     trn_labels = [label for label in train_labels if label in s_cls] 
     # use #(orig_A) images for generating an annotator
-	orig_labels = trn_labels[:orig_A]
+    orig_labels = trn_labels[:orig_A]
     imgs, labels = [], []
 	# flip labels
     for c in s_cls:
@@ -66,6 +66,8 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
                 tr_labels.append(l)
         # half is kept as original, the other half is uniformly flipped
         dests = flip_dict.get(str(c))
+        if (dests == None):
+            continue
         n = len(dests)
         half = len(tr_labels)//2
         chunk = half//n
@@ -79,8 +81,10 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
             flipped_list.append(dests[-1])
             d -= 1
         # shuffling makes it equivalent to random sampling for flippling
-        imgs = imgs + tr_imgs
-        labels = labels + shuffle(flipped_labels)
+#         imgs = imgs + tr_imgs
+#         labels = labels + shuffle(flipped_labels)
+        imgs.append(tr_imgs)
+        labels.append(shuffle(flipped_labels))
 
     # generate an annotator
     a1_model = LR().fit(imgs, labels)
