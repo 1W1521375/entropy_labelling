@@ -6,7 +6,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression as LR
 from keras.datasets import mnist
 import itertools
-from random import *
 import codecs
 
 # import warnings filter
@@ -39,29 +38,11 @@ def flip_label(pair, label):
     flipped = [c for c in p_list if (c != label)]
     return flipped[0]
 
-# probabilistically decides whether to flip a label
-def flip_cond():
-    r = random() # in the range [0.0, 1.0)
-    if (r <= 0.2):
-        return True
-    else:
-        return False
-
-# labelling and evaluating them
 def tsallis_scls_eval(q, classes, orig_A, lim_A):
     s_cls = classes
     
     # confusing pairs ... see LR-misclassification-habits.pdf
-    conf_pairs = [{0, 8}, {0, 6}, 
-                  {1, 8}, {1, 2}, 
-                  {2, 8}, {2, 3}, 
-                  {3, 5}, {3, 2}, 
-                  {4, 9}, {4, 8},
-                  {5, 3}, {5, 8}, 
-                  {6, 2}, {6, 5}, 
-                  {7, 9}, {7, 2},
-                  {8, 5}, {8, 9}, 
-                  {9, 7}, {9, 4}]
+    conf_pairs = conf_pairs = [(0, 6), (3, 5), (4, 9), (7, 9), (8, 2, 5, 9)]
     
     # extract dataset of chosen classes
     trn_imgs = [img for i, img in enumerate(train_imgs) if train_labels[i] in s_cls]
