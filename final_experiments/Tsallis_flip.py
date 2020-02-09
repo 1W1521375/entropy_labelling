@@ -6,6 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression as LR
 from keras.datasets import mnist
 import itertools
+from random import shuffle
 import codecs
 
 # import warnings filter
@@ -32,32 +33,57 @@ def tsallis_label(q, probas, s_cls):
         labels = [s_cls[i] for i, e in enumerate(elements) if e >= ts_thrshld]
     return labels
 
-# flips label
-def flip_label(pair, label):
-    p_list = list(pair)
-    flipped = [c for c in p_list if (c != label)]
-    return flipped[0]
-
 def tsallis_scls_eval(q, classes, orig_A, lim_A):
     s_cls = classes
     
     # confusing pairs ... see LR-misclassification-habits.pdf
     conf_pairs = conf_pairs = [(0, 6), (3, 5), (4, 9), (7, 9), (8, 2, 5, 9)]
-    
-    # extract dataset of chosen classes
+    # decide what to flip
+	flip_dict = dict()
+    for c_pair in conf_pairs:
+    	origin = c_pair[0]
+    	# if origin label is in sub_classes
+    	if (origin in s_cls):
+            intersection = set(c_pair)&set(s_cls)
+        	n = len(intersection) - 1
+        	# if there is at least one labels pair to flip
+        	if (1 <= n):
+            	dests = intersection - {origin}
+            	flip_dict[str(origin)] = list(dests)
+
+    # extract dataset of the chosen classes
     trn_imgs = [img for i, img in enumerate(train_imgs) if train_labels[i] in s_cls]
-    trn_labels = [label for label in train_labels if label in s_cls]
-    
-    # flip some labels
-    flip_flags = [True if c_pair < set(s_cls) else False for c_pair in conf_pairs]
-    
-    for i, label in enumerate(trn_labels):
-        for j, flag in enumerate(flip_flags):
-            if (flag and flip_cond() and label in conf_pairs[j]):
-                trn_labels[i] = flip_label(conf_pairs[j], label)
-    
+    trn_labels = [label for label in train_labels if label in s_cls] 
+    # use #(orig_A) images for generating an annotator
+	orig_labels = trn_labels[:orig_A]
+    imgs, labels = [], []
+	# flip labels
+    for c in s_cls:
+        tr_imgs, tr_labels = [], []
+        for i, l in enumerate(orig_labels):
+            if (l == c):
+                tr_imgs.append(trn_imgs[i])
+                tr_labels.append(l)
+        # half is kept as original, the other half is uniformly flipped
+        dests = flip_dict.get(str(c))
+        n = len(dests)
+        half = len(tr_labels)//2
+        chunk = half//n
+        flipped_list = tr_labels[:half]
+        # flipping
+        for i in range(n):
+            flipped_list = flipped_list + [dests[i] for k in range(chunk)]
+        # 要素数がflip候補数で割り切れない場合は詰め物する(最後の要素繰り返すだけ)
+        d = len(tr_labels) - len(flipped_list)
+        while (d > 0):
+            flipped_list.append(dests[-1])
+            d -= 1
+        # shuffling makes it equivalent to random sampling for flippling
+        imgs = imgs + tr_imgs
+        labels = labels + shuffle(flipped_labels)
+
     # generate an annotator
-    a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
+    a1_model = LR().fit(imgs, labels)
     a1_proba = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
     # entropy labelling
@@ -97,15 +123,23 @@ for q in q_list:
     for i in range(2, 11): # i: num of sub-classes
         a, b, c = 0, 0, 0
         if (i == 10):
-            sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
-            mnist_evals.append((sample_lnum, sample_lqual, sample_lqual2))
+            for _ in range(5):
+                sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
+                d += sample_lnum
+                e += sample_lqual
+                f += sample_lqual2
+            mnist_evals.append((d/5, e/5, f/5))
         else:
             combi_ni = fact_10//(factorial(i)*factorial(10 - i))
             for scls in itertools.combinations(classes, i):
-                sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, list(scls), orig_A1, lim_A1)
-                a += sample_lnum
-                b += sample_lqual
-                c += sample_lqual2
+                for _ in range(5):
+                    sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, list(scls), orig_A1, lim_A1)
+                    a_pre += sample_lnum
+                    b_pre += sample_lqual
+                    c_pre += sample_lqual2
+                a += a_pre/5
+                b += b_pre/5
+                c += c_pre/5
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/results/txt_format/tsallis_flip.txt", 'a', 'utf-8'))
             
