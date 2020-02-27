@@ -170,4 +170,4 @@ for q in q_list:
 # plt.ylabel("Average label accuracy of labels generated")	
 # plt.legend(loc = 'best')
 # plt.grid(True)
-# plt.savefig("/home/killerqueen/lab/final_experiments/tsallis_labels-acc_full.pdf")
+# plt.savefig("/home/k.goto/entropy_labelling/results/tsallis_flip.pdf")
