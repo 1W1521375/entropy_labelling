@@ -95,6 +95,7 @@ for q in q_list:
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/killerqueen/lab/final_experiments/tsallis_results_full.txt", 'a', 'utf-8'))
             
+    # for graphs
     quals = [e[1] for e in mnist_evals]
     lqual_mnist.append(quals)
     
