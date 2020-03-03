@@ -107,10 +107,13 @@ for R in Rs:
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         a, b, c = 0, 0, 0
         if (i == 10):
-            d, e, f = 0, 0, 0
             for _ in range(5):
-                sample_lnum, sample_lqual, sample_lqual2 = topk_scls_eval(part, list(scls), orig_A1, lim_A1)
-                mnist_evals.append((sample_lnum, sample_lqual, sample_lqual2))
+                d, e, f = topk_scls_eval(part, list(scls), orig_A1, lim_A1)
+                a += d
+                b += e
+                c += f
+            sample_lnum, sample_lqual, sample_lqual2 = a/5, b/5, c/5
+            mnist_evals.append((sample_lnum, sample_lqual, sample_lqual2))
         else:
             for scls in itertools.combinations(classes, i):
                 x, y, z = 0, 0, 0
@@ -124,6 +127,6 @@ for R in Rs:
                 b += sample_lqual
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/top-R_results.txt", 'a', 'utf-8'))
+    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/top-R_results.txt", 'a', 'utf-8'))
     quals = [e[1] for e in mnist_evals]
     lqual_mnist.append(quals)
