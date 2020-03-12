@@ -108,7 +108,7 @@ for R in Rs:
         a, b, c = 0, 0, 0
         if (i == 10):
             for _ in range(5):
-                d, e, f = topk_scls_eval(part, list(scls), orig_A1, lim_A1)
+                d, e, f = topk_scls_eval(part, [a for a in range(10)], orig_A1, lim_A1)
                 a += d
                 b += e
                 c += f
