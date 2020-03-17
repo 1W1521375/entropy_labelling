@@ -76,8 +76,9 @@ fact_10 = factorial(10)
 lqual_mnist = []
 
 # from q \in [0.1, 2.0]... be careful with q = 0.99
-q_list = [q/10 for q in range(1, 21)]
-q_list[9] = 0.99
+# q_list = [q/10 for q in range(1, 21)]
+# q_list[9] = 0.99
+q_list = [-1]
 for q in q_list:
     mnist_evals = []
     for i in range(2, 11): # i: num of sub-classes
@@ -93,23 +94,24 @@ for q in q_list:
                 b += sample_lqual
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/killerqueen/lab/final_experiments/tsallis_results_full.txt", 'a', 'utf-8'))
+#     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/killerqueen/lab/final_experiments/tsallis_results_full.txt", 'a', 'utf-8'))
+    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/final_experiments/additional_tsallis.txt", 'a', 'utf-8'))
             
     # for graphs
     quals = [e[1] for e in mnist_evals]
     lqual_mnist.append(quals)
     
 # draw a graph
-plt.figure(dpi = 100)
-plt.title("Quality of labels; Tsallis (q = 0.1, ..., 2.0)")
-classes = [i for i in range(2, 11)]
+# plt.figure(dpi = 100)
+# plt.title("Quality of labels; Tsallis (q = 0.1, ..., 2.0)")
+# classes = [i for i in range(2, 11)]
 
-for c in range(20):
-    q_val = "q = " + str(q_list[c])
-    plt.plot(classes, lqual_mnist[c], marker = 'o', color = cm.bone(c/20), label = q_val)
+# for c in range(20):
+#     q_val = "q = " + str(q_list[c])
+#     plt.plot(classes, lqual_mnist[c], marker = 'o', color = cm.bone(c/20), label = q_val)
 
-plt.xlabel("Num of sub-classes")
-plt.ylabel("Average label accuracy of labels generated")	
-plt.legend(loc = 'best')
-plt.grid(True)
-plt.savefig("/home/killerqueen/lab/final_experiments/tsallis_labels-acc_full.pdf")
+# plt.xlabel("Num of sub-classes")
+# plt.ylabel("Average label accuracy of labels generated")	
+# plt.legend(loc = 'best')
+# plt.grid(True)
+# plt.savefig("/home/killerqueen/lab/final_experiments/tsallis_labels-acc_full.pdf")
