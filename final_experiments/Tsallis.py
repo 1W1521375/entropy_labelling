@@ -78,7 +78,7 @@ lqual_mnist = []
 # from q \in [0.1, 2.0]... be careful with q = 0.99
 # q_list = [q/10 for q in range(1, 21)]
 # q_list[9] = 0.99
-q_list = [-1]
+q_list = [-0.1, -1]
 for q in q_list:
     mnist_evals = []
     for i in range(2, 11): # i: num of sub-classes
@@ -95,7 +95,7 @@ for q in q_list:
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
 #     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/killerqueen/lab/final_experiments/tsallis_results_full.txt", 'a', 'utf-8'))
-    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/final_experiments/additional_tsallis.txt", 'a', 'utf-8'))
+    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/negq_tsallis.txt", 'a', 'utf-8'))
             
     # for graphs
     quals = [e[1] for e in mnist_evals]
