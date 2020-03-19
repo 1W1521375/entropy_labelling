@@ -27,10 +27,9 @@ def tsallis_label(q, probas, s_cls):
     # thrshld in tsallis entropy model
     ts_thrshld = np.sum(np.power(probas, q))
     if q < 1:
-        labels = [s_cls[i] for i, e in enumerate(elements) if e <= ts_thrshld]
+        labels = [s_cls[i] for i, e in enumerate(elements) if e < ts_thrshld]
     else:
         labels = [s_cls[i] for i, e in enumerate(elements) if e >= ts_thrshld]
-    
     return labels
 
 # labelling and evaluating them
@@ -94,7 +93,6 @@ for q in q_list:
                 b += sample_lqual
                 c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-#     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/killerqueen/lab/final_experiments/tsallis_results_full.txt", 'a', 'utf-8'))
     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/negq_tsallis.txt", 'a', 'utf-8'))
             
     # for graphs
