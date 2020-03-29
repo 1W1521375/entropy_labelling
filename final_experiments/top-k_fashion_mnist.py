@@ -1,9 +1,7 @@
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression as LR
-from keras.datasets import mnist
+from keras.datasets import fashion_mnist
 import itertools
 import codecs
 
@@ -37,7 +35,7 @@ def topk_scls_eval(k, classes, orig_A, lim_A):
     tst_labels = [label for label in test_labels if label in s_cls]
 
     # generate an annotator
-    a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
+    a1_model = LR(max_iter = 300).fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_proba = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
     # entropy labelling
@@ -56,8 +54,8 @@ def topk_scls_eval(k, classes, orig_A, lim_A):
                     
     return (len(m_labels)/lim_A, score*100/len(m_labels))
 
-# loading MNIST
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+# loading fashion MNIST
+(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 train_imgs = np.array([x.ravel() for x in train_images])
 test_imgs = np.array([y.ravel() for y in test_images])
 
@@ -74,11 +72,10 @@ for k in range(1, 10):
     evals = []
     i = k + 1
     while (i < 11): # i: num of sub-classes
-        print(f"{i} classes, {k}-labels")
         a, b = 0, 0
         if (i == 10):
             sample_lnum, sample_lqual = topk_scls_eval(k, classes, orig_A1, lim_A1)
-            mnist_evals.append((sample_lnum, sample_lqual))
+            evals.append((sample_lnum, sample_lqual))
         else:
             combi_ni = fact_10//(factorial(i)*factorial(10 - i))
             for scls in itertools.combinations(classes, i):

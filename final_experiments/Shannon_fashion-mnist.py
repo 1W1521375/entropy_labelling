@@ -75,18 +75,18 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-mnist_evals = []
+evals = []
 for i in range(2, 11): # i: num of sub-classes
     a, b = 0, 0
     if (i == 10):
         sample_lnum, sample_lqual = shannon_scls_eval(classes, orig_A1, lim_A1)
-        mnist_evals.append((sample_lnum, sample_lqual))
+        evals.append((sample_lnum, sample_lqual))
     else:
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         for scls in itertools.combinations(classes, i):
             sample_lnum, sample_lqual = shannon_scls_eval(list(scls), orig_A1, lim_A1)
             a += sample_lnum
             b += sample_lqual
-        mnist_evals.append((a/combi_ni, b/combi_ni))
+        evals.append((a/combi_ni, b/combi_ni))
         
-print(mnist_evals, sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/shannon_fashion-mnist.txt", 'a', 'utf-8'))
+print(evals, sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/shannon_fashion-mnist.txt", 'a', 'utf-8'))

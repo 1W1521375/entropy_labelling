@@ -1,6 +1,3 @@
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression as LR
@@ -29,7 +26,12 @@ def tsallis_label(q, probas, s_cls):
     if q < 1:
         labels = [s_cls[i] for i, e in enumerate(elements) if e < ts_thrshld]
     else:
-        labels = [s_cls[i] for i, e in enumerate(elements) if e >= ts_thrshld]
+        labels = [s_cls[i] for i, e in enumerate(elements) if e > ts_thrshld]
+        
+    # for no label situation because of over/underflow
+    if (labels == []):
+        labels = [s_cls[np.argmax(probas)]]    
+        
     return labels
 
 # labelling and evaluating them
@@ -41,9 +43,9 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
     trn_labels = [label for label in train_labels if label in s_cls]
 
     # generate an annotator
-    a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
+    a1_model = LR(max_iter = 300).fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_proba = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
-
+        
     # entropy labelling
     mul_labels = [tsallis_label(q, probas, s_cls) for probas in a1_proba]
     
@@ -70,7 +72,8 @@ img_SIZE = train_images.shape[1]*train_images.shape[2]
 classes = [i for i in range(10)]
 orig_A1, lim_A1 = 2000, 2000
 fact_10 = factorial(10)
-q_list = [-1.0, -0.1, 0.1]
+# q_list = [-1.0, -0.1, 0.1]
+q_list = [0.1]
 
 for q in q_list:
     evals = []
