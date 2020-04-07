@@ -1,0 +1,7 @@
+$latex = 'platex';
+$bibtex = 'pbibtex';
+$dvipdf = 'dvipdfmx %O -o %D %S';
+$makeindex = 'mendex %O -o %D %S';
+$pdf_mode = 3; 
+# 句読点を全角カンマなどにする
+$latex = "find . -type f -name '*.tex' -print0 | xargs -0 sed -i '' -e 's/、/，/g' -e 's/。/．/g'; platex";
