@@ -40,7 +40,7 @@ def topk_scls_eval(part, classes, orig_A, lim_A):
     tst_labels = [label for label in test_labels if label in s_cls]
 
     # generate an annotator
-    ann_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
+    ann_model = LR(max_iter = 300).fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     
     # for top-1.0
     if (part == 0):
