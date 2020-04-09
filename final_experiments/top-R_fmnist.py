@@ -77,7 +77,7 @@ def topk_scls_eval(part, classes, orig_A, lim_A):
         for labels in mul_labels:
              [m_labels.append(l) for l in labels]                
                     
-        return (len(m_labels)/lim_A, score*100/len(m_labels), score*100/lim_A)
+        return (len(m_labels)/lim_A, score*100/len(m_labels))
 
 # loading MNIST
 (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
@@ -96,37 +96,31 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-lqual_mnist = []
-
-Rs = [i/100 for i in range(100, 130, 5)]
+Rs = [1.2, 1.4, 1.6, 1.8]
 for R in Rs:
     mnist_evals = []
     part = round((R - 1.00)*100)
     for i in range (2, 11): # i: num of sub-classes
         print(f"{i} classes, top-{R}, {part}% of data mul-labelled")
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
-        a, b, c = 0, 0, 0
+        a, b = 0, 0
+        i = 10 # for 10 classes probelm experiment only!!!!
         if (i == 10):
             for _ in range(5):
-                d, e, f = topk_scls_eval(part, [a for a in range(10)], orig_A1, lim_A1)
+                d, e = topk_scls_eval(part, [a for a in range(10)], orig_A1, lim_A1)
                 a += d
                 b += e
-                c += f
-            sample_lnum, sample_lqual, sample_lqual2 = a/5, b/5, c/5
-            mnist_evals.append((sample_lnum, sample_lqual, sample_lqual2))
+            sample_lnum, sample_lqual = a/5, b/5
+            mnist_evals.append((sample_lnum, sample_lqual))
         else:
             for scls in itertools.combinations(classes, i):
-                x, y, z = 0, 0, 0
+                x, y = 0, 0
                 for _ in range(5):
-                    s, t, u = topk_scls_eval(part, list(scls), orig_A1, lim_A1)
+                    s, t = topk_scls_eval(part, list(scls), orig_A1, lim_A1)
                     x += s
                     y += t
-                    z += u
-                sample_lnum, sample_lqual, sample_lqual2 = x/5, y/5, z/5
+                sample_lnum, sample_lqual = x/5, y/5
                 a += sample_lnum
                 b += sample_lqual
-                c += sample_lqual2
-            mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/top-R_results_fmnist.txt", 'a', 'utf-8'))
-    quals = [e[1] for e in mnist_evals]
-    lqual_mnist.append(quals)
+            mnist_evals.append((a/combi_ni, b/combi_ni))
+    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/top-R_results_fmnist-additional.txt", 'a', 'utf-8'))
