@@ -76,9 +76,8 @@ q_list = [-0.25, 0.25]
 
 for q in q_list:
     mnist_evals = []
-    for i in range(2, 11): # i: num of sub-classes
+    for i in range(2, 10): # i: num of sub-classes
         a, b = 0, 0
-        i = 10
         if (i == 10):
             sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
             mnist_evals.append((sample_lnum, sample_lqual))
