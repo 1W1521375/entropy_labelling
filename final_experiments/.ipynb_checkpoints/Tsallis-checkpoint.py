@@ -72,44 +72,23 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-lqual_mnist = []
+q_list = [-0.5]
 
-# from q \in [0.1, 2.0]... be careful with q = 0.99
-# q_list = [q/10 for q in range(1, 21)]
-# q_list[9] = 0.99
-q_list = [-0.1, -1]
 for q in q_list:
     mnist_evals = []
     for i in range(2, 11): # i: num of sub-classes
-        a, b, c = 0, 0, 0
+        a, b = 0, 0
+        i = 10
         if (i == 10):
             sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
-            mnist_evals.append((sample_lnum, sample_lqual, sample_lqual2))
+            mnist_evals.append((sample_lnum, sample_lqual))
+            print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/negq_tsallis.txt", 'a', 'utf-8'))
+            break
         else:
             combi_ni = fact_10//(factorial(i)*factorial(10 - i))
             for scls in itertools.combinations(classes, i):
                 sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, list(scls), orig_A1, lim_A1)
                 a += sample_lnum
                 b += sample_lqual
-                c += sample_lqual2
             mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/negq_tsallis.txt", 'a', 'utf-8'))
-            
-    # for graphs
-    quals = [e[1] for e in mnist_evals]
-    lqual_mnist.append(quals)
-    
-# draw a graph
-# plt.figure(dpi = 100)
-# plt.title("Quality of labels; Tsallis (q = 0.1, ..., 2.0)")
-# classes = [i for i in range(2, 11)]
-
-# for c in range(20):
-#     q_val = "q = " + str(q_list[c])
-#     plt.plot(classes, lqual_mnist[c], marker = 'o', color = cm.bone(c/20), label = q_val)
-
-# plt.xlabel("Num of sub-classes")
-# plt.ylabel("Average label accuracy of labels generated")	
-# plt.legend(loc = 'best')
-# plt.grid(True)
-# plt.savefig("/home/killerqueen/lab/final_experiments/tsallis_labels-acc_full.pdf")

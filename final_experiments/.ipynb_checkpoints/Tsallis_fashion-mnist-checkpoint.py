@@ -72,16 +72,19 @@ img_SIZE = train_images.shape[1]*train_images.shape[2]
 classes = [i for i in range(10)]
 orig_A1, lim_A1 = 2000, 2000
 fact_10 = factorial(10)
-# q_list = [-1.0, -0.1, 0.1]
-q_list = [0.1]
+
+q_list = [0.5]
 
 for q in q_list:
     evals = []
     for i in range(2, 11): # i: num of sub-classes
         a, b = 0, 0
+        i = 10
         if (i == 10):
             sample_lnum, sample_lqual = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
             evals.append((sample_lnum, sample_lqual))
+            print(f"{q}\n{evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/tsallis_fashion_mnist.txt", 'a', 'utf-8'))
+            break
         else:
             combi_ni = fact_10//(factorial(i)*factorial(10 - i))
             for scls in itertools.combinations(classes, i):
