@@ -21,7 +21,7 @@ def factorial(n):
 # top-k labelling
 def topk_label(probas, s_cls, k):
     l_indexes = probas.argsort()[::-1][:k]
-    labels = np.array([s_cls[i] for i in l_indexes])
+    labels = [s_cls[i] for i in l_indexes]
     return labels
 
 # labelling and evaluating them
@@ -40,6 +40,11 @@ def topk_scls_eval(k, classes, orig_A, lim_A):
 
     # entropy labelling
     mul_labels = [topk_label(probas, s_cls, k) for probas in a1_proba]
+    
+    # dump generated labels and original true labels
+    print("generated labels and original labels", sep = "\n", file = codecs.open("topk_fmnist_log.txt", 'a', 'utf-8'))
+    print(f"{mul_labels}", sep = "\n", file = codecs.open("topk_fmnist_log.txt", 'a', 'utf-8'))
+    print(f"{trn_labels[orig_A:orig_A + lim_A]}", sep = "\n", file = codecs.open("topk_fmnist_log.txt", 'a', 'utf-8'))
     
     # labels score evaluation
     score = 0
@@ -70,7 +75,8 @@ fact_10 = factorial(10)
 # from top-1 (ord) to top-9
 for k in range(1, 10):
     evals = []
-    i = k + 1
+#     i = k + 1
+    i = 10 # 10-class only
     while (i < 11): # i: num of sub-classes
         a, b = 0, 0
         if (i == 10):
@@ -84,4 +90,4 @@ for k in range(1, 10):
                 b += sample_lqual
             evals.append((a/combi_ni, b/combi_ni))
         i += 1
-    print(evals, sep = "\n", file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/topk_fashion-mnist.txt", "a", "utf-8"))
+    print(evals, sep = "\n", file = codecs.open("topk_fmnist_log.txt", "a", "utf-8"))

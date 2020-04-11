@@ -26,7 +26,7 @@ def factorial(n):
 # top-k labelling
 def topk_label(probas, s_cls, k):
     l_indexes = probas.argsort()[::-1][:k]
-    labels = np.array([s_cls[i] for i in l_indexes])
+    labels = [s_cls[i] for i in l_indexes]
     return labels
 
 # labelling and evaluating them
@@ -66,6 +66,11 @@ def topk_scls_eval(part, classes, orig_A, lim_A):
         # concat top-1 results and top-2 results
         mul_labels = ord_labels + top2_labels
         
+        # dump generated labels and original true labels
+        print("generated labels and original labels", sep = "\n", file = codecs.open("topr_fmnist_log.txt", 'a', 'utf-8'))
+        print(f"{mul_labels}", sep = "\n", file = codecs.open("topr_fmnist_log.txt", 'a', 'utf-8'))
+        print(f"{f_labels + s_labels}", sep = "\n", file = codecs.open("topr_fmnist_log.txt", 'a', 'utf-8'))
+        
         # labels score evaluation
         score = 0
         for labels, t_label in zip(mul_labels, f_labels + s_labels):
@@ -100,11 +105,9 @@ Rs = [1.2, 1.4, 1.6, 1.8]
 for R in Rs:
     mnist_evals = []
     part = round((R - 1.00)*100)
-    for i in range (2, 11): # i: num of sub-classes
-        print(f"{i} classes, top-{R}, {part}% of data mul-labelled")
+    for i in range (10, 11): # i: num of sub-classes
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         a, b = 0, 0
-        i = 10 # for 10 classes probelm experiment only!!!!
         if (i == 10):
             for _ in range(5):
                 d, e = topk_scls_eval(part, [a for a in range(10)], orig_A1, lim_A1)
@@ -123,4 +126,4 @@ for R in Rs:
                 a += sample_lnum
                 b += sample_lqual
             mnist_evals.append((a/combi_ni, b/combi_ni))
-    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/top-R_results_fmnist-additional.txt", 'a', 'utf-8'))
+    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("topr_fmnist_log.txt", 'a', 'utf-8'))

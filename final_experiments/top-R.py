@@ -26,7 +26,7 @@ def factorial(n):
 # top-k labelling
 def topk_label(probas, s_cls, k):
     l_indexes = probas.argsort()[::-1][:k]
-    labels = np.array([s_cls[i] for i in l_indexes])
+    labels = [s_cls[i] for i in l_indexes]
     return labels
 
 # labelling and evaluating them
@@ -49,11 +49,10 @@ def topk_scls_eval(part, classes, orig_A, lim_A):
         score = 0
         for label, t_label in zip(mul_labels, trn_labels[orig_A:orig_A + lim_A]):
             if (label == t_label):
-                score += 1
-        
-        return (1.0, score*100/len(mul_labels), score*100/lim_A)
+                score += 1  
+        return (1.0, score*100/len(mul_labels))
     
-    # for top-R (1.05, 1.1, ..., 1.25)
+    # for top-R
     else:
         # split data to label into two groups
         f_imgs, s_imgs, f_labels, s_labels = train_test_split(trn_imgs[orig_A:orig_A + lim_A], trn_labels[orig_A:orig_A + lim_A], test_size = part/100)
@@ -65,6 +64,11 @@ def topk_scls_eval(part, classes, orig_A, lim_A):
         top2_labels = [topk_label(probas, s_cls, 2) for probas in s_ann_proba]
         # concat top-1 results and top-2 results
         mul_labels = ord_labels + top2_labels
+        
+        # dump generated labels and original true labels
+        print("generated labels and original labels", sep = "\n", file = codecs.open("topr_log.txt", 'a', 'utf-8'))
+        print(f"{mul_labels}", sep = "\n", file = codecs.open("topr_log.txt", 'a', 'utf-8'))
+        print(f"{f_labels + s_labels}", sep = "\n", file = codecs.open("topr_log.txt", 'a', 'utf-8'))
         
         # labels score evaluation
         score = 0
@@ -100,11 +104,10 @@ Rs = [1.2, 1.4, 1.6, 1.8]
 for R in Rs:
     mnist_evals = []
     part = round((R - 1.00)*100)
-    for i in range (2, 11): # i: num of sub-classes
-        print(f"{i} classes, top-{R}, {part}% of data mul-labelled")
+    for i in range (10, 11): # i: num of sub-classes
+#         print(f"{i} classes, top-{R}, {part}% of data mul-labelled")
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         a, b = 0, 0
-        i = 10
         if (i == 10):
             for _ in range(5):
                 d, e = topk_scls_eval(part, [a for a in range(10)], orig_A1, lim_A1)
@@ -123,4 +126,4 @@ for R in Rs:
                 a += sample_lnum
                 b += sample_lqual
             mnist_evals.append((a/combi_ni, b/combi_ni))
-    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/top-R_results-additional.txt", 'a', 'utf-8'))
+    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("topr_log.txt", 'a', 'utf-8'))

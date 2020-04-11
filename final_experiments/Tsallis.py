@@ -29,7 +29,7 @@ def tsallis_label(q, probas, s_cls):
     if q < 1:
         labels = [s_cls[i] for i, e in enumerate(elements) if e < ts_thrshld]
     else:
-        labels = [s_cls[i] for i, e in enumerate(elements) if e >= ts_thrshld]
+        labels = [s_cls[i] for i, e in enumerate(elements) if e > ts_thrshld]
     return labels
 
 # labelling and evaluating them
@@ -46,6 +46,11 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
 
     # entropy labelling
     mul_labels = [tsallis_label(q, probas, s_cls) for probas in a1_proba]
+    
+    # dump generated labels and original true labels
+    print("generated labels and original labels", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
+    print(f"{mul_labels}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
+    print(f"{trn_labels[orig_A:orig_A + lim_A]}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
     
     # labels score evaluation
     score = 0
@@ -72,11 +77,11 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-q_list = [-0.25, 0.25]
+q_list = [-1.0, -0.25, -0.5, -0.1, 0.1, 0.25, 0.5]
 
 for q in q_list:
     mnist_evals = []
-    for i in range(2, 10): # i: num of sub-classes
+    for i in range(10, 11): # i: num of sub-classes
         a, b = 0, 0
         if (i == 10):
             sample_lnum, sample_lqual = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
@@ -88,4 +93,4 @@ for q in q_list:
                 a += sample_lnum
                 b += sample_lqual
             mnist_evals.append((a/combi_ni, b/combi_ni))
-    print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/negq_tsallis.txt", 'a', 'utf-8'))
+print(f"labels evaluation\n{q}\n{mnist_evals}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))

@@ -1,5 +1,3 @@
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression as LR
@@ -19,11 +17,11 @@ def factorial(n):
         return n*factorial(n - 1)
     else:
         print("sth wrong")
-
+        
 # top-k labelling
 def topk_label(probas, s_cls, k):
     l_indexes = probas.argsort()[::-1][:k]
-    labels = np.array([s_cls[i] for i in l_indexes])
+    labels = [s_cls[i] for i in l_indexes]
     return labels
 
 # labelling and evaluating them
@@ -43,6 +41,11 @@ def topk_scls_eval(k, classes, orig_A, lim_A):
     # entropy labelling
     mul_labels = [topk_label(probas, s_cls, k) for probas in a1_proba]
     
+    # dump generated labels and original true labels
+    print("generated labels and original labels", sep = "\n", file = codecs.open("topk_log.txt", 'a', 'utf-8'))
+    print(f"{mul_labels}", sep = "\n", file = codecs.open("topk_log.txt", 'a', 'utf-8'))
+    print(f"{trn_labels[orig_A:orig_A + lim_A]}", sep = "\n", file = codecs.open("topk_log.txt", 'a', 'utf-8'))
+    
     # labels score evaluation
     score = 0
     for labels, t_label in zip(mul_labels, trn_labels[orig_A:orig_A + lim_A]):
@@ -54,7 +57,7 @@ def topk_scls_eval(k, classes, orig_A, lim_A):
     for labels in mul_labels:
          [m_labels.append(l) for l in labels]                
                     
-    return (len(m_labels)/lim_A, score*100/len(m_labels), score*100/lim_A)
+    return (len(m_labels)/lim_A, score*100/len(m_labels))
 
 # loading MNIST
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
@@ -69,40 +72,23 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-lqual_mnist1 = []
-lqual_mnist2 = []
-lqual_mnist3 = []
-
-for k in range(1,4):
+# from top-1 (ord) to top-9
+for k in range(1, 10):
     mnist_evals = []
-    for i in range(2, 11):
-        a, b, c = 0, 0, 0
+#     i = k + 1
+    i = 10 # 10-class only
+    while (i < 11): # i: num of sub-classes
+        print(f"{i} classes, {k}-labels")
+        a, b = 0, 0
         if (i == 10):
-            sample_lnum, sample_lqual, sample_lqual2 = topk_scls_eval(k, classes, orig_A1, lim_A1)
-            mnist_evals.append((sample_lnum, sample_lqual, sample_lqual2))
+            sample_lnum, sample_lqual = topk_scls_eval(k, classes, orig_A1, lim_A1)
+            mnist_evals.append((sample_lnum, sample_lqual))
         else:
             combi_ni = fact_10//(factorial(i)*factorial(10 - i))
             for scls in itertools.combinations(classes, i):
-                sample_lnum, sample_lqual, sample_lqual2 = topk_scls_eval(k, list(scls), orig_A1, lim_A1)
+                sample_lnum, sample_lqual = topk_scls_eval(k, list(scls), orig_A1, lim_A1)
                 a += sample_lnum
                 b += sample_lqual
-                c += sample_lqual2
-                mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-
-    if (k == 1):
-        lqual_mnist1 = [e[1] for e in mnist_evals]
-    elif (k == 2):
-        lqual_mnist2 = [e[1] for e in mnist_evals]
-    else:
-        lqual_mnist3 = [e[1] for e in mnist_evals]
-
-plt.figure(dpi = 100)
-plt.title("Quality of labels; Top-k (k = 1, 2, 3)")
-plt.plot([i for i in range(2, 11)], lqual_mnist1, marker = "o", color = "k", label = "Top-1 MNIST")
-plt.plot([i for i in range(2, 11)], lqual_mnist2, marker = "o", color = "b", label = "Top-2 MNIST")
-plt.plot([i for i in range(2, 11)], lqual_mnist3, marker = "o", color = "r", label = "Top-3 MNIST")
-plt.xlabel("Num of sub-classes")
-plt.ylabel("Average label accuracy of labels generated")	
-plt.legend(loc = "best")
-plt.grid(True)
-plt.savefig("topk_labels-acc.pdf")
+            mnist_evals.append((a/combi_ni, b/combi_ni))
+        i += 1
+    print(mnist_evals, sep = "\n", file = codecs.open("topk_log.txt", "a", "utf-8"))

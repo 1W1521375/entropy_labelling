@@ -47,7 +47,7 @@ def oneMth_scls_eval(classes, orig_A, lim_A):
     # dump generated labels and original true labels
     print("generated labels and original labels", sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     print(mul_labels, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
-    print(tst_labels, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
+    print(trn_labels[orig_A:orig_A + lim_A], sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     
     # labels score evaluation
     score = 0
