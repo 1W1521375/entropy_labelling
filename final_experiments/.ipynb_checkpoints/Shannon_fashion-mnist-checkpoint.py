@@ -29,7 +29,7 @@ def shannon_label(probas, s_cls):
     if isnan(Hp):
         labels = [s_cls[np.argmax(probas)]]
     else:
-        labels = np.array([s_cls[i] for i, Ipk in enumerate(info_con) if Ipk <= Hp])
+        labels = [s_cls[i] for i, Ipk in enumerate(info_con) if Ipk <= Hp]
     return labels
 
 # labelling and evaluating them
@@ -48,6 +48,11 @@ def shannon_scls_eval(classes, orig_A, lim_A):
 
     # entropy labelling
     mul_labels = [shannon_label(probas, s_cls) for probas in a1_proba]
+    
+    # dump generated labels and original true labels
+    print("generated labels and original labels", sep = "\n", file = codecs.open("shannon_fmnist_log.txt", 'a', 'utf-8'))
+    print(mul_labels, sep = "\n", file = codecs.open("shannon_fmnist_log.txt", 'a', 'utf-8'))
+    print(tst_labels, sep = "\n", file = codecs.open("shannon_fmnist_log.txt", 'a', 'utf-8'))
     
     # labels score evaluation
     score = 0
@@ -76,7 +81,7 @@ orig_A1, lim_A1 = 2000, 2000
 fact_10 = factorial(10)
 
 evals = []
-for i in range(2, 11): # i: num of sub-classes
+for i in range(10, 11): # i: num of sub-classes
     a, b = 0, 0
     if (i == 10):
         sample_lnum, sample_lqual = shannon_scls_eval(classes, orig_A1, lim_A1)
@@ -88,5 +93,5 @@ for i in range(2, 11): # i: num of sub-classes
             a += sample_lnum
             b += sample_lqual
         evals.append((a/combi_ni, b/combi_ni))
-        
-print(evals, sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/shannon_fashion-mnist.txt", 'a', 'utf-8'))
+print("labels evaluation", sep = '\n', file = codecs.open("shannon_fmnist_log.txt", 'a', 'utf-8'))
+print(evals, sep = '\n', file = codecs.open("shannon_fmnist_log.txt", 'a', 'utf-8'))

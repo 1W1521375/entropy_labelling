@@ -20,16 +20,15 @@ def factorial(n):
     else:
         print("sth wrong")
         
-# 1/K labelling
-def oneKth_label(probas, s_cls):
-    # 1/K
+# 1/M labelling
+def oneMth_label(probas, s_cls):
+    # 1/M
     thrshld = 1/len(s_cls)
-    labels = np.array([s_cls[i] for i, pk in enumerate(probas) if pk > thrshld])
-
+    labels = [s_cls[i] for i, pk in enumerate(probas) if pk > thrshld]
     return labels
 
 # labelling and evaluating them
-def oneKth_scls_eval(classes, orig_A, lim_A):
+def oneMth_scls_eval(classes, orig_A, lim_A):
     s_cls = classes
 
     # extract dataset of chosen classes
@@ -42,8 +41,13 @@ def oneKth_scls_eval(classes, orig_A, lim_A):
     a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_proba = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
-    # 1/K labelling
-    mul_labels = [oneKth_label(probas, s_cls) for probas in a1_proba]
+    # 1/M labelling
+    mul_labels = [oneMth_label(probas, s_cls) for probas in a1_proba]
+    
+    # dump generated labels and original true labels
+    print("generated labels and original labels", sep = "\n", file = codecs.open("oneMth_fmnist_log.txt", 'a', 'utf-8'))
+    print(mul_labels, sep = "\n", file = codecs.open("oneMth_fmnist_log.txt", 'a', 'utf-8'))
+    print(tst_labels, sep = "\n", file = codecs.open("oneMth_fmnist_log.txt", 'a', 'utf-8'))
     
     # labels score evaluation
     score = 0
@@ -62,7 +66,6 @@ def oneKth_scls_eval(classes, orig_A, lim_A):
 (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 train_imgs = np.array([x.ravel() for x in train_images])
 test_imgs = np.array([y.ravel() for y in test_images])
-
 img_SIZE = train_images.shape[1]*train_images.shape[2]
 
 # main experiment
@@ -72,17 +75,17 @@ orig_A1, lim_A1 = 2000, 2000
 fact_10 = factorial(10)
 
 evals = []
-for i in range(2, 11): # i: num of sub-classes
-    a, b, c = 0, 0, 0
+for i in range(10, 11): # i: num of sub-classes
+    a, b = 0, 0
     if (i == 10):
-        sample_lnum, sample_lqual = oneKth_scls_eval(classes, orig_A1, lim_A1)
+        sample_lnum, sample_lqual = oneMth_scls_eval(classes, orig_A1, lim_A1)
         evals.append((sample_lnum, sample_lqual))
     else:
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         for scls in itertools.combinations(classes, i):
-            sample_lnum, sample_lqual = oneKth_scls_eval(list(scls), orig_A1, lim_A1)
+            sample_lnum, sample_lqual = oneMth_scls_eval(list(scls), orig_A1, lim_A1)
             a += sample_lnum
             b += sample_lqual
         evals.append((a/combi_ni, b/combi_ni))
-        
-print(evals, sep = "\n", file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/oneKth_fashion-mnist.txt", 'a', 'utf-8'))
+print("labels evaluation", sep = "\n", file = codecs.open("oneMth_fmnist_log.txt", 'a', 'utf-8'))        
+print(evals, sep = "\n", file = codecs.open("oneMth_fmnist_log.txt", 'a', 'utf-8'))

@@ -24,7 +24,7 @@ def factorial(n):
 def oneMth_label(probas, s_cls):
     # 1/M
     thrshld = 1/len(s_cls)
-    labels = np.array([s_cls[i] for i, pk in enumerate(probas) if pk > thrshld])
+    labels = [s_cls[i] for i, pk in enumerate(probas) if pk > thrshld]
     return labels
 
 # labelling and evaluating them
@@ -45,6 +45,7 @@ def oneMth_scls_eval(classes, orig_A, lim_A):
     mul_labels = [oneMth_label(probas, s_cls) for probas in a1_proba]
     
     # dump generated labels and original true labels
+    print("generated labels and original labels", sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     print(mul_labels, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     print(tst_labels, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     
@@ -81,7 +82,6 @@ for i in range(10, 11): # i: num of sub-classes
     if (i == 10):
         sample_lnum, sample_lqual = oneMth_scls_eval(classes, orig_A1, lim_A1)
         mnist_evals.append((sample_lnum, sample_lqual))
-        print(mnist_evals, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     else:
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         for scls in itertools.combinations(classes, i):
@@ -89,4 +89,5 @@ for i in range(10, 11): # i: num of sub-classes
             a += sample_lnum
             b += sample_lqual
         mnist_evals.append((a/combi_ni, b/combi_ni))       
+print("labels evaluation", sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
 print(mnist_evals, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
