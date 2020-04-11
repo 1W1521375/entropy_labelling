@@ -58,7 +58,7 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
     for labels in mul_labels:
          [m_labels.append(l) for l in labels]                
                     
-    return (len(m_labels)/lim_A, score*100/len(m_labels), score*100/lim_A)
+    return (len(m_labels)/lim_A, score*100/len(m_labels))
 
 # loading MNIST
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
@@ -79,15 +79,13 @@ for q in q_list:
     for i in range(2, 10): # i: num of sub-classes
         a, b = 0, 0
         if (i == 10):
-            sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
+            sample_lnum, sample_lqual = tsallis_scls_eval(q, classes, orig_A1, lim_A1)
             mnist_evals.append((sample_lnum, sample_lqual))
-            print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/negq_tsallis.txt", 'a', 'utf-8'))
-            break
         else:
             combi_ni = fact_10//(factorial(i)*factorial(10 - i))
             for scls in itertools.combinations(classes, i):
-                sample_lnum, sample_lqual, sample_lqual2 = tsallis_scls_eval(q, list(scls), orig_A1, lim_A1)
+                sample_lnum, sample_lqual = tsallis_scls_eval(q, list(scls), orig_A1, lim_A1)
                 a += sample_lnum
                 b += sample_lqual
-            mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
+            mnist_evals.append((a/combi_ni, b/combi_ni))
     print(f"{q}\n{mnist_evals}", sep = '\n', file = codecs.open("/home/k.goto/entropy_labelling/final_experiments/negq_tsallis.txt", 'a', 'utf-8'))

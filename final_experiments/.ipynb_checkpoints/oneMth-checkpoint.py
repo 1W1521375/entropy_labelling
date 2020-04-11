@@ -20,16 +20,15 @@ def factorial(n):
     else:
         print("sth wrong")
         
-# 1/K labelling
-def oneKth_label(probas, s_cls):
-    # 1/K
+# 1/M labelling
+def oneMth_label(probas, s_cls):
+    # 1/M
     thrshld = 1/len(s_cls)
     labels = np.array([s_cls[i] for i, pk in enumerate(probas) if pk > thrshld])
-
     return labels
 
 # labelling and evaluating them
-def oneKth_scls_eval(classes, orig_A, lim_A):
+def oneMth_scls_eval(classes, orig_A, lim_A):
     s_cls = classes
 
     # extract dataset of chosen classes
@@ -42,8 +41,12 @@ def oneKth_scls_eval(classes, orig_A, lim_A):
     a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_proba = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
-    # 1/K labelling
-    mul_labels = [oneKth_label(probas, s_cls) for probas in a1_proba]
+    # 1/M labelling
+    mul_labels = [oneMth_label(probas, s_cls) for probas in a1_proba]
+    
+    # dump generated labels and original true labels
+    print(mul_labels, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
+    print(tst_labels, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     
     # labels score evaluation
     score = 0
@@ -56,7 +59,7 @@ def oneKth_scls_eval(classes, orig_A, lim_A):
     for labels in mul_labels:
          [m_labels.append(l) for l in labels]                
                     
-    return (len(m_labels)/lim_A, score*100/len(m_labels), score*100/lim_A)
+    return (len(m_labels)/lim_A, score*100/len(m_labels))
 
 # loading MNIST
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
@@ -72,29 +75,18 @@ orig_A1, lim_A1 = 2000, 2000
 fact_10 = factorial(10)
 
 mnist_evals = []
-for i in range(2, 11): # i: num of sub-classes
-    a, b, c = 0, 0, 0
+for i in range(10, 11): # i: num of sub-classes
+    a, b = 0, 0
+    i = 10
     if (i == 10):
-        sample_lnum, sample_lqual, sample_lqual2 = oneKth_scls_eval(classes, orig_A1, lim_A1)
-        mnist_evals.append((sample_lnum, sample_lqual, sample_lqual2))
+        sample_lnum, sample_lqual = oneMth_scls_eval(classes, orig_A1, lim_A1)
+        mnist_evals.append((sample_lnum, sample_lqual))
+        print(mnist_evals, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))
     else:
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         for scls in itertools.combinations(classes, i):
-            sample_lnum, sample_lqual, sample_lqual2 = oneKth_scls_eval(list(scls), orig_A1, lim_A1)
+            sample_lnum, sample_lqual = oneMth_scls_eval(list(scls), orig_A1, lim_A1)
             a += sample_lnum
             b += sample_lqual
-            c += sample_lqual2
-        mnist_evals.append((a/combi_ni, b/combi_ni, c/combi_ni))
-        
-print(mnist_evals, sep = "\n", file = codecs.open("/home/killerqueen/lab/results/oneKth_results.txt", 'a', 'utf-8'))
-            
-lqual_mnist = [e[1] for e in mnist_evals]
-
-plt.figure(dpi = 100)
-plt.title("Quality of labels; oneKth")
-plt.plot([i for i in range(2, 11)], lqual_mnist, marker = 'o', color = 'b')
-plt.xlabel("Num of sub-classes")
-plt.ylabel("Average label accuracy of labels generated")	
-plt.legend(loc = 'best')
-plt.grid(True)
-plt.savefig("/home/killerqueen/lab/results/oneKth_labels-acc.pdf")
+        mnist_evals.append((a/combi_ni, b/combi_ni))       
+print(mnist_evals, sep = "\n", file = codecs.open("oneMth_log.txt", 'a', 'utf-8'))

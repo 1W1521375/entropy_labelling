@@ -73,7 +73,7 @@ classes = [i for i in range(10)]
 orig_A1, lim_A1 = 2000, 2000
 fact_10 = factorial(10)
 
-q_list = [0.25, -0.25]
+q_list = [0.5, -0.5]
 
 for q in q_list:
     evals = []
