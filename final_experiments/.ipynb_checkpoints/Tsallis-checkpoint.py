@@ -77,7 +77,7 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-q_list = [-1.0, -0.25, -0.5, -0.1, 0.1, 0.25, 0.5]
+q_list = [-1.0, -0.5, -0.25, -0.1, 0.1, 0.25, 0.5]
 
 for q in q_list:
     mnist_evals = []
