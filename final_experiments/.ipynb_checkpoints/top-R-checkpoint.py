@@ -65,23 +65,25 @@ def topk_scls_eval(part, classes, orig_A, lim_A):
         # concat top-1 results and top-2 results
         mul_labels = ord_labels + top2_labels
         
+        # top-1 for all instances by ann
+        ann_proba = ann_model.predict_proba(f_imgs + s_imgs)
+        top1_whole = [topk_label(probas, s_cls, 1) for probas in ann_proba]
+        
         # dump generated labels and original true labels
-        print("generated labels and original labels", sep = "\n", file = codecs.open("topr_log.txt", 'a', 'utf-8'))
-        print(f"{mul_labels}", sep = "\n", file = codecs.open("topr_log.txt", 'a', 'utf-8'))
-        print(f"{f_labels + s_labels}", sep = "\n", file = codecs.open("topr_log.txt", 'a', 'utf-8'))
+        print(f"Top-r labels\n{mul_labels}", sep = "\n", file = codecs.open("topr_log.txt", 'a', 'utf-8'))
+        print(f"Top-1 by ann\n{top1_whole}", sep = '\n', file = codecs.open("topr_log.txt", 'a', 'utf-8'))
+        print(f"True labels\n{f_labels + s_labels}", sep = '\n', file = codecs.open("topr_log.txt", 'a', 'utf-8'))
         
         # labels score evaluation
         score = 0
+        total_lnum = 0
         for labels, t_label in zip(mul_labels, f_labels + s_labels):
+            total_lnum += len(labels)
             for l in labels:
                 if (l == t_label):
-                    score += 1
-
-        m_labels = []
-        for labels in mul_labels:
-             [m_labels.append(l) for l in labels]                
+                    score += 1           
                     
-        return (len(m_labels)/lim_A, score*100/len(m_labels))
+        return (total_lnum/lim_A, score*100/total_lnum)
 
 # loading MNIST
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
@@ -102,6 +104,7 @@ fact_10 = factorial(10)
 
 Rs = [1.2, 1.4, 1.6, 1.8]
 for R in Rs:
+    print(f"R = {R}", sep = '\n', file = codecs.open("topr_log.txt", 'a', 'utf-8'))
     mnist_evals = []
     part = round((R - 1.00)*100)
     for i in range (10, 11): # i: num of sub-classes
@@ -126,4 +129,4 @@ for R in Rs:
                 a += sample_lnum
                 b += sample_lqual
             mnist_evals.append((a/combi_ni, b/combi_ni))
-    print(f"R = {R}\n{mnist_evals}", sep = '\n', file = codecs.open("topr_log.txt", 'a', 'utf-8'))
+#     print(f"{mnist_evals}", sep = '\n', file = codecs.open("topr_log.txt", 'a', 'utf-8'))
