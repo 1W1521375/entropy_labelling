@@ -18,8 +18,6 @@ def factorial(n):
         return 1
     elif n > 0:
         return n*factorial(n - 1)
-    else:
-        print("sth wrong")
         
 # entropy labelling
 def tsallis_label(q, probas, s_cls):
