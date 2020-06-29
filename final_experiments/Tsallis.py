@@ -91,4 +91,4 @@ for q in q_list:
                 a += sample_lnum
                 b += sample_lqual
             mnist_evals.append((a/combi_ni, b/combi_ni))
-print(f"labels evaluation\n{q}\n{mnist_evals}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
+    print(f"labels evaluation\n{q}\n{mnist_evals}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
