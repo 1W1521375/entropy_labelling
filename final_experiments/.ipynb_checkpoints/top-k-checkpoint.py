@@ -38,7 +38,7 @@ def topk_scls_eval(k, classes, orig_A, lim_A):
     a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_proba = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
-    # entropy labelling
+    # top-k labelling
     mul_labels = [topk_label(probas, s_cls, k) for probas in a1_proba]
     
     # dump generated labels and original true labels
