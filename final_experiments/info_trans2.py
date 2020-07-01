@@ -45,8 +45,8 @@ def info_trans_scoring_1(k, classes, orig_A, lim_A):
     score = 0
     for labels, probas in zip(mul_labels, a1_probas):
         u_dist = 1/len(labels)
-        for i, label in enumerate(labels):
-            score += np.power(probas[i] - u_dist, 2)
+        for label in labels:
+            score += np.power(probas[label] - u_dist, 2)
     
     return score
 
@@ -58,7 +58,6 @@ test_imgs = np.array([y.ravel() for y in test_images])
 # main measurement
 classes = [i for i in range(10)]
 orig_A1, lim_A1 = 2000, 2000
-
 fact_10 = factorial(10)
 
 # from top-1 (ord) to top-8
@@ -72,4 +71,4 @@ for k in range(1, 9):
             temp += info_trans_scoring_1(k, list(scls), orig_A1, lim_A1)
         results.append(temp/combi_ni)
         i += 1
-    print(f"Top-{k}\n{results}", sep = "\n", file = codecs.open("for_apsipa6.txt", 'a', 'utf-8'))
+    print(f"Top-{k}\n{results}", sep = "\n", file = codecs.open("info_trans.txt", 'a', 'utf-8'))
