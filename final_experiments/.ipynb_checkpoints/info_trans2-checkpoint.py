@@ -1,5 +1,5 @@
 # for subclasses, over 80% ann
-# q = -1.0, -0.1, 0.1
+# Top-K (q = -inf, +inf included)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -20,24 +20,14 @@ def factorial(n):
     elif n > 0:
         return n*factorial(n - 1)
         
-# entropy labelling
-def tsallis_label(q, probas, s_cls):
-    elements = np.power(probas, q - 1)
-    # thrshld in tsallis entropy model
-    ts_thrshld = np.sum(np.power(probas, q))
-    if q < 1:
-        labels = [s_cls[i] for i, e in enumerate(elements) if e < ts_thrshld]
-    else:
-        labels = [s_cls[i] for i, e in enumerate(elements) if e > ts_thrshld]
-    
-    # for a definite instance
-    if (labels == []):
-        labels = [s_cls[np.argmax(probas)]]
-    
+# top-k labelling
+def topk_label(probas, s_cls, k):
+    l_indexes = probas.argsort()[::-1][:k]
+    labels = [s_cls[i] for i in l_indexes]
     return labels
     
 # labelling and evaluating them
-def info_trans_scoring_1(q, classes, orig_A, lim_A):
+def info_trans_scoring_1(k, classes, orig_A, lim_A):
     s_cls = classes
 
     # extract dataset of chosen classes
@@ -48,8 +38,8 @@ def info_trans_scoring_1(q, classes, orig_A, lim_A):
     a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_probas = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
-    # entropy labelling
-    mul_labels = [tsallis_label(q, probas, s_cls) for probas in a1_probas]
+    # top-k labelling
+    mul_labels = [topk_label(probas, s_cls, k) for probas in a1_probas]
 
     # scoring info transmission
     score = 0
@@ -64,7 +54,6 @@ def info_trans_scoring_1(q, classes, orig_A, lim_A):
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 train_imgs = np.array([x.ravel() for x in train_images])
 test_imgs = np.array([y.ravel() for y in test_images])
-img_SIZE = train_images.shape[1]*train_images.shape[2]
 
 # main measurement
 classes = [i for i in range(10)]
@@ -72,14 +61,15 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-q_list = [-1.0, -0.1, 0.1]
-
-for i in range(2, 10):
+# from top-1 (ord) to top-8
+for k in range(1, 9):
     results = []
-    for q in q_list: # i: num of sub-classes
+    i = k + 1
+    while (i < 10): # i: num of sub-classes
         temp = 0
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         for scls in itertools.combinations(classes, i):
-            temp += info_trans_scoring_1(q, scls, orig_A1, lim_A1)
+            temp += info_trans_scoring_1(k, list(scls), orig_A1, lim_A1)
         results.append(temp/combi_ni)
-    print(f"{i}-classes: {results}", sep = "\n", file = codecs.open("for_apsipa6.txt", 'a', 'utf-8'))
+        i += 1
+    print(f"Top-{k}\n{results}", sep = "\n", file = codecs.open("for_apsipa6.txt", 'a', 'utf-8'))
