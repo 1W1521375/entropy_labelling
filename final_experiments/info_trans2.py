@@ -27,7 +27,7 @@ def topk_label(probas, s_cls, k):
     return labels
     
 # labelling and evaluating them
-def info_trans_scoring_1(k, classes, orig_A, lim_A):
+def info_trans_scoring(k, classes, orig_A, lim_A):
     s_cls = classes
 
     # extract dataset of chosen classes
@@ -68,7 +68,7 @@ for k in range(1, 9):
         temp = 0
         combi_ni = fact_10//(factorial(i)*factorial(10 - i))
         for scls in itertools.combinations(classes, i):
-            temp += info_trans_scoring_1(k, list(scls), orig_A1, lim_A1)
+            temp += info_trans_scoring(k, list(scls), orig_A1, lim_A1)
         results.append(temp/combi_ni)
         i += 1
     print(f"Top-{k}\n{results}", sep = "\n", file = codecs.open("info_trans.txt", 'a', 'utf-8'))

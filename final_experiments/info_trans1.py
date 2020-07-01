@@ -70,7 +70,7 @@ def info_trans_scoring(q, classes, orig_A, lim_A):
     # labelling
     if (q == 0): # 1/M
         mul_labels = [oneMth_label(probas, s_cls) for probas in a1_probas]
-    else if (q == 1): # shannon
+    elif (q == 1): # shannon
         mul_labels = [shannon_label(probas, s_cls) for probas in a1_probas]
     else:
         mul_labels = [tsallis_label(q, probas, s_cls) for probas in a1_probas]
