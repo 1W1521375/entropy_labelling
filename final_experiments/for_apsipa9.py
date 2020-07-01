@@ -38,7 +38,7 @@ def info_trans_scoring_1(k, classes, orig_A, lim_A):
     a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_probas = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
-    # 1/M labelling
+    # top-k labelling
     mul_labels = [topk_label(probas, s_cls, k) for probas in a1_probas]
 
     # scoring info transmission
@@ -73,4 +73,4 @@ for k in range(1, 9):
             temp += info_trans_scoring_1(k, list(scls), orig_A1, lim_A1)
         results.append(temp/combi_ni)
         i += 1
-    print(f"{results}", sep = "\n", file = codecs.open("for_apsipa6.txt", 'a', 'utf-8'))
+    print(f"Top-{k}\n{results}", sep = "\n", file = codecs.open("for_apsipa6.txt", 'a', 'utf-8'))
