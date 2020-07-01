@@ -46,7 +46,7 @@ def info_trans_scoring(k, classes, orig_A, lim_A):
     for labels, probas in zip(mul_labels, a1_probas):
         u_dist = 1/len(labels)
         for label in labels:
-            score += np.power(probas[label] - u_dist, 2)
+            score += np.power(probas[s_cls.index(label)] - u_dist, 2)
     
     return score
 
