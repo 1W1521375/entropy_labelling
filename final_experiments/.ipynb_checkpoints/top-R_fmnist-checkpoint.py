@@ -84,7 +84,7 @@ def topk_scls_eval(part, classes, orig_A, lim_A):
                     
         return (len(m_labels)/lim_A, score*100/len(m_labels))
 
-# loading MNIST
+# loading fashion MNIST
 (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 train_imgs = np.array([x.ravel() for x in train_images])
 test_imgs = np.array([y.ravel() for y in test_images])
