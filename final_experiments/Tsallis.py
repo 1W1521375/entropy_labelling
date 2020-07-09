@@ -39,16 +39,17 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
     trn_labels = [label for label in train_labels if label in s_cls]
 
     # generate an annotator
-    a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
+    # a1_model = LR().fit(trn_imgs[:orig_A], trn_labels[:orig_A])
+    a1_model = LR(max_iter = 300).fit(trn_imgs[:orig_A], trn_labels[:orig_A])
     a1_proba = a1_model.predict_proba(trn_imgs[orig_A:orig_A + lim_A])
 
     # entropy labelling
     mul_labels = [tsallis_label(q, probas, s_cls) for probas in a1_proba]
     
     # dump generated labels and original true labels
-    print("generated labels and original labels", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
-    print(f"{mul_labels}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
-    print(f"{trn_labels[orig_A:orig_A + lim_A]}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
+    print(f"q = {q}", sep = "\n", file = codecs.open("tsallis_log2.txt", 'a', 'utf-8'))
+    print(f"{mul_labels}", sep = "\n", file = codecs.open("tsallis_log2.txt", 'a', 'utf-8'))
+    print(f"{trn_labels[orig_A:orig_A + lim_A]}", sep = "\n", file = codecs.open("tsallis_log2.txt", 'a', 'utf-8'))
     
     # labels score evaluation
     score = 0
@@ -64,7 +65,9 @@ def tsallis_scls_eval(q, classes, orig_A, lim_A):
     return (len(m_labels)/lim_A, score*100/len(m_labels))
 
 # loading MNIST
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+# (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+from keras.datasets import fashion_mnist
+(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 train_imgs = np.array([x.ravel() for x in train_images])
 test_imgs = np.array([y.ravel() for y in test_images])
 img_SIZE = train_images.shape[1]*train_images.shape[2]
@@ -75,7 +78,8 @@ orig_A1, lim_A1 = 2000, 2000
 
 fact_10 = factorial(10)
 
-q_list = [-1.0, -0.5, -0.25, -0.1, 0.1, 0.25, 0.5]
+# q_list = [-1.0, -0.5, -0.25, -0.1, 0.1, 0.25, 0.5]
+q_list = [-10]
 
 for q in q_list:
     mnist_evals = []
@@ -91,4 +95,4 @@ for q in q_list:
                 a += sample_lnum
                 b += sample_lqual
             mnist_evals.append((a/combi_ni, b/combi_ni))
-    print(f"labels evaluation\n{q}\n{mnist_evals}", sep = "\n", file = codecs.open("tsallis_log.txt", 'a', 'utf-8'))
+#     print(f"labels evaluation\n{q}\n{mnist_evals}", sep = "\n", file = codecs.open("tsallis_log2.txt", 'a', 'utf-8'))
